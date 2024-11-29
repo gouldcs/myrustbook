@@ -72,7 +72,10 @@ fn shadowing() {
 #[allow(dead_code)]
 /**
  * Represents a single value. There are four primary scalar types:
- * integers, floating-point numbers, Booleans,and characters.
+ * integers, floating-point numbers, Booleans,and characters. For integers,
+ * compiling in debug mode will check for integer overflow and trigger a panic at
+ * runtime. When compiling in release mode, Rust will use two's compliment to wrap
+ * integer overflow. This is considered an error, but will not panic.
  */
 fn scalar_types() {
     // Integer types
@@ -94,4 +97,25 @@ fn scalar_types() {
     let _octal: u8 = 0o77;
     let _binary: u8 = 0b1111_0000;
     let _byte: u8 = b'A'; // u8 only!
+
+    // Handling overflow
+
+    // Explicitly wrap the overflow
+    let result1: i8 = _sint8.wrapping_add(1);
+    println!("Adding 1 to 127 in a signed 8-bit integer using wrapping_add = {result1}");
+
+    /*
+        Overflow results in None output from optional. `unwrap_or` allows us to specify
+        a fallback value if the Optional returns `None`.
+    */
+    let result2: i8 = _sint8.checked_add(1).unwrap_or(0);
+    println!("Adding 1 to 127 in a signed 8-bit integer using checked_add = {result2}");
+
+    // Allows us to check for overflow by returning a tuple, and the boolean value is `true` if there is overflow.
+    let result3: (i8, bool) = _sint8.overflowing_add(1);
+    println!("Adding 1 to 127 in a signed 8-bit integer using overflowing_add = {}. Overflow is {}", result3.0, result3.1);
+
+    // caps the result to the max (or min) if the operation would result in overflow.
+    let result4: i8 = _sint8.saturating_add(1);
+    println!("Adding 1 to 127 in a signed 8-bit integer using saturating_add = {result4}");
 }
