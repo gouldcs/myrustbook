@@ -98,7 +98,14 @@ fn scalar_types() {
     let _binary: u8 = 0b1111_0000;
     let _byte: u8 = b'A'; // u8 only!
 
-    // Handling overflow
+    handling_overflow();
+}
+
+/**
+ * Handling overflow
+ */
+fn handling_overflow() {
+    let _sint8: i8 = 127;
 
     // Explicitly wrap the overflow
     let result1: i8 = _sint8.wrapping_add(1);
